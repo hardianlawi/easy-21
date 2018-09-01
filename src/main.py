@@ -8,6 +8,8 @@ from src.monte_carlo import MonteCarloAgent
 @click.option('--method', default='monte-carlo')
 def main(no_episodes, method):
 
+    # TODO: Check Correctness
+
     possible_actions = ['hit', 'stick']
     env = Easy21()
     agent = MonteCarloAgent(possible_actions)
@@ -19,7 +21,8 @@ def main(no_episodes, method):
         while not terminate:
             cur_state, reward, terminate = env.step(cur_state, action)
             agent.receive_feedback(reward)
-            action = agent.take_action(cur_state)
+            if not terminate:
+                action = agent.take_action(cur_state)
 
 
 if __name__ == '__main__':
