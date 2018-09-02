@@ -4,25 +4,51 @@ from src.monte_carlo import MonteCarloAgent
 
 
 @click.command()
-@click.option('--no_episodes', default=500000)
+@click.argument('output_dir', default='/home/hardian/easy-21/outputs')
 @click.option('--method', default='monte-carlo')
-def main(no_episodes, method):
-
-    # TODO: Check Correctness
+@click.option('--no_episodes', default=500000)
+@click.option('--save_freq', default=25000,
+              help='Will create a snapshot of the agent every no_episodes \
+              % save_freq == 0')
+def main(output_dir, method, no_episodes, save_freq):
 
     possible_actions = ['hit', 'stick']
     env = Easy21()
     agent = MonteCarloAgent(possible_actions)
 
-    terminate = False
     for i in range(no_episodes):
+
+        print('###############')
+        print('Game', i)
+
+        terminate = False
         cur_state = env.initial_step()
-        action = agent.take_action(cur_state)
+
         while not terminate:
+            action = agent.take_action(cur_state)
+            print('State:', cur_state, 'action taken:', action)
             cur_state, reward, terminate = env.step(cur_state, action)
             agent.receive_feedback(reward)
-            if not terminate:
-                action = agent.take_action(cur_state)
+
+        print('Last state:', cur_state)
+        print_winner(reward)
+        print('###############')
+
+        agent.update()
+
+        if i % save_freq == 0:
+            agent.save(output_dir, i)
+
+    agent.save(output_dir)
+
+
+def print_winner(reward):
+    if reward == -1:
+        print('Dealer wins.')
+    if reward == 1:
+        print('Player wins.')
+    if reward == 0:
+        print('Draw.')
 
 
 if __name__ == '__main__':

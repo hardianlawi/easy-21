@@ -3,10 +3,7 @@ import random
 
 class Easy21(object):
 
-    def __init__(self, gamma=1):
-
-        # Discounting rate
-        self._gamma = gamma
+    def __init__(self):
 
         # card values range from 1 to 10 (Uniformly)
         self._card_values = list(range(1, 11))
