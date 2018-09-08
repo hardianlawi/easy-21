@@ -17,6 +17,8 @@ class MonteCarloAgent(RLearningAgent):
         self._gamma = gamma
         self._n_0 = n_0
         self._base_name = base_name
+        self._action2id = dict(zip(possible_actions, range(self._n_actions)))
+        self._id2action = dict(zip(range(self._n_actions), possible_actions))
         self._state_action_values = np.zeros(
             (11, 22, self._n_actions), dtype=np.float32)
         self._state_action_visits = np.zeros(
@@ -33,28 +35,43 @@ class MonteCarloAgent(RLearningAgent):
 
         # Choose action based on Epsilon-Greedy
         if explore and random.random() < epsilon:
-            action = random.choice(range(self._n_actions))
+            action_id = random.choice(range(self._n_actions))
         else:
             action_values = self._state_action_values.take(state)
-            action = np.argmax(action_values)
+            action_id = np.argmax(action_values)
 
+        return self._id2action[action_id]
+
+    def observe_and_act(self, state, reward=None, terminate=False):
+
+        action = None
+
+        if not terminate:
+            action = self.take_action(state)
+            self._memorize(state, action)
+
+        if reward is not None:
+            self._update_returns(reward)
+
+        if terminate:
+            self._update()
+
+        return action
+
+    def _memorize(self, state, action):
+        action_id = self._action2id[action]
         self._past_states.append(state)
-        self._past_actions.append(action)
+        self._past_actions.append(action_id)
 
-        return self._possible_actions[action]
-
-    def receive_feedback(self, reward):
-
+    def _update_returns(self, reward):
         gamma = self._gamma
         past_returns = self._past_returns
         n_states = len(past_returns)
-
         for i, r in enumerate(past_returns):
             past_returns[i] = r + gamma**(n_states - i) * reward
-
         past_returns.append(reward)
 
-    def update(self):
+    def _update(self):
 
         for (d_H, p_H), a, g in zip(self._past_states,
                                     self._past_actions,

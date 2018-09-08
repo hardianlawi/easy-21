@@ -1,11 +1,12 @@
 import click
 from src.environment import Easy21
 from src.monte_carlo import MonteCarloAgent
+from src.td_learning import TDLearningAgent
 
 
 @click.command()
 @click.argument('output_dir', default='/home/hardian/easy-21/outputs')
-@click.option('--method', default='monte-carlo')
+@click.option('--method', default='monte_carlo')
 @click.option('--no_episodes', default=500000)
 @click.option('--save_freq', default=25000,
               help='Will create a snapshot of the agent every no_episodes \
@@ -14,7 +15,10 @@ def main(output_dir, method, no_episodes, save_freq):
 
     possible_actions = ['hit', 'stick']
     env = Easy21()
-    agent = MonteCarloAgent(possible_actions)
+    if method == 'monte_carlo':
+        agent = MonteCarloAgent(possible_actions)
+    else:
+        agent = TDLearningAgent(possible_actions)
 
     for i in range(no_episodes):
 
@@ -23,18 +27,15 @@ def main(output_dir, method, no_episodes, save_freq):
 
         terminate = False
         cur_state = env.initial_step()
-
+        action = agent.observe_and_act(cur_state)
         while not terminate:
-            action = agent.take_action(cur_state)
             print('State:', cur_state, 'action taken:', action)
-            cur_state, reward, terminate = env.step(cur_state, action)
-            agent.receive_feedback(reward)
+            cur_state, reward, terminate = env.move(action)
+            action = agent.observe_and_act(cur_state, reward, terminate)
 
         print('Last state:', cur_state)
         print_winner(reward)
         print('###############')
-
-        agent.update()
 
         if i % save_freq == 0:
             agent.save(output_dir, i)

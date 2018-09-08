@@ -11,12 +11,17 @@ class Easy21(object):
         # prob red 1/3, black 2/3
         self._card_colours = ['red', 'black', 'black']
 
-    def initial_step(self):
-        dealer_hand = self._draw_card()[0]
-        player_hand = self._draw_card()[0]
-        return [dealer_hand, player_hand]
+        self._cur_state = None
 
-    def step(self, state, action):
+    def initial_step(self):
+        self._cur_state = [self._draw_card()[0], self._draw_card()[0]]
+        return self._cur_state
+
+    def move(self, action):
+        cur_state = self._cur_state
+        return self._step(cur_state, action)
+
+    def _step(self, state, action):
         """Process one step of a player
 
         Args:
