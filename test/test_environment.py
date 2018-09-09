@@ -15,8 +15,10 @@ class TestEnvironment(unittest.TestCase):
             self.assertGreaterEqual(d_H, 1)
             self.assertGreaterEqual(p_H, 1)
 
-    def test_step(self):
-        pass
+    def test_move(self):
+        s = self.env.initial_step()
+        s, r, t = self.env.move('hit')
+        self.assertListEqual(s, self.env._cur_state)
 
     def test_get_reward(self):
 

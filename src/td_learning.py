@@ -41,7 +41,7 @@ class TDLearningAgent(RLearningAgent):
             action_values = self._state_action_values.take(state)
             action_id = np.argmax(action_values)
 
-        return self._possible_actions[action_id]
+        return self._id2action[action_id]
 
     def observe_and_act(self, state, reward=None, terminate=False):
 
@@ -128,8 +128,8 @@ class TDLearningAgent(RLearningAgent):
         x, y = np.meshgrid(np.arange(1, 11),
                            np.arange(1, 22))
 
-        state_action_values = self._state_action_values[1:, 1:, 0].T
-        state_action_visits = self._state_action_visits[1:, 1:, 0].T
+        state_action_values = self._state_action_values.max(axis=-1)[1:, 1:].T
+        state_action_visits = self._state_action_visits.max(axis=-1)[1:, 1:].T
 
         fig = plt.figure()
 
@@ -144,6 +144,8 @@ class TDLearningAgent(RLearningAgent):
         ax.set_title('State action visits')
 
         self._save_local(output_dir, iteration, extension='png')
+
+        plt.close()
 
     def load(fname):
         with open(fname, 'rb') as f:

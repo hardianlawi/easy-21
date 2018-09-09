@@ -138,6 +138,8 @@ class MonteCarloAgent(RLearningAgent):
 
         self._save_local(output_dir, iteration, extension='png')
 
+        plt.close()
+
     def load(fname):
         with open(fname, 'rb') as f:
             self = pickle.load(f)

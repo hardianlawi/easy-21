@@ -13,13 +13,17 @@ class Easy21(object):
 
         self._cur_state = None
 
+    def clear(self):
+        self._cur_state = None
+
     def initial_step(self):
         self._cur_state = [self._draw_card()[0], self._draw_card()[0]]
         return self._cur_state
 
     def move(self, action):
         cur_state = self._cur_state
-        return self._step(cur_state, action)
+        self._cur_state, reward, terminate = self._step(cur_state, action)
+        return self._cur_state, reward, terminate
 
     def _step(self, state, action):
         """Process one step of a player
@@ -31,7 +35,7 @@ class Easy21(object):
             'stick')
 
         Returns:
-            list: a sample of the next state s' and a reward.
+            list: the next state s', a reward and termination status.
         """
         dealer_hand, player_hand = state[0], state[1]
         terminate = False
