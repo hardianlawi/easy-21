@@ -96,6 +96,8 @@ Observe that, though **TD Learning** is much noisier, both methods ultimately co
 
 ## To-Do
 
+- [ ] Implement Linear Function Approximation
+- [ ] Plot the winning percentage for every method vs the current heuristics.
 - [ ] Create gifs to visualize training.
 - [ ] Create error plots with respect to the number of episodes passed for new training using the pre-trained optimal values
 - [ ] Visualize the differences in the training progress using different hyperparameters (`gamma` and `n_0`).
