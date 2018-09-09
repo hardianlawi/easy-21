@@ -1,6 +1,6 @@
 # Easy 21
 
-This repository contains the code for the *Easy-21* assignment of [Reinforcement Learning course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html) by *David Silver*.
+This repository contains the code for the *Easy 21* assignment of [Reinforcement Learning course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html) by *David Silver*.
 
 ## Getting Started
 
@@ -96,7 +96,8 @@ Observe that, though **TD Learning** is much noisier, both methods ultimately co
 
 ## To-Do
 
-- [ ] Implement Linear Function Approximation
+- [ ] Implement a general **TD Learning**, i.e. Sarsa(lambda)
+- [ ] Implement **Linear Function Approximation**
 - [ ] Plot the winning percentage for every method vs the current heuristics.
 - [ ] Create gifs to visualize training.
 - [ ] Create error plots with respect to the number of episodes passed for new training using the pre-trained optimal values
