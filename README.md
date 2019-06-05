@@ -1,4 +1,4 @@
-# Easy 21
+# Easy 21 [WIP]
 
 This repository contains the code for the *Easy 21* assignment of [Reinforcement Learning course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html) by *David Silver*.
 
