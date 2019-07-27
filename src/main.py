@@ -1,8 +1,15 @@
 import click
+import logging
 from .environment import Easy21
 from .monte_carlo import MonteCarloAgent
 from .td_learning import TDLearningAgent
 from .utils import train_and_plot
+
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S:",
+)
 
 
 @click.command()
@@ -22,30 +29,8 @@ def main(output_dir, agent_method, mc_method, no_episodes, val_no_episodes):
     # Training
     train_and_plot(no_episodes, agent, env, output_dir)
 
-    assert False
-
     # Evaluation
-    # Validation rounds
-
-    total_win = 0
-
-    for i in range(val_no_episodes):
-
-        terminate = False
-        cur_state = env.initial_step()
-        action = agent.take_action(cur_state, explore=False)
-        while not terminate:
-            print("State:", cur_state, "action taken:", action)
-            cur_state, reward, terminate = env.move(action)
-            action = agent.take_action(cur_state, explore=False)
-
-        if reward != -1:
-            total_win += reward
-
-        env.clear()
-
-    print("Out of", val_no_episodes, "Player wins", total_win, "games")
-    print("Winning percentage:", float(total_win) / val_no_episodes)
+    # evaluate_and_plot(val_no_episodes, agent, env, output_dir)
 
 
 if __name__ == "__main__":

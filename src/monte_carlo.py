@@ -1,9 +1,5 @@
-import os
-import gc
-import pickle
 import random
 import numpy as np
-import matplotlib.pyplot as plt
 from .environment import Easy21
 from .agent import RLearningAgent
 
@@ -73,4 +69,3 @@ class MonteCarloAgent(RLearningAgent):
         self._past_actions = []
         self._past_states = []
         self._past_returns = []
-        gc.collect()
