@@ -3,7 +3,6 @@ from src.environment import Easy21
 
 
 class TestEnvironment(unittest.TestCase):
-
     def setUp(self):
         self.env = Easy21()
 
@@ -17,23 +16,19 @@ class TestEnvironment(unittest.TestCase):
 
     def test_move(self):
         s = self.env.initial_step()
-        s, r, t = self.env.move('hit')
+        s, r = self.env.step("hit")
         self.assertListEqual(s, self.env._cur_state)
 
     def test_get_reward(self):
 
         d_H, p_H = 5, 5
-        reward = self.env._get_reward(d_H, p_H, False)
+        reward = self.env._get_reward(d_H, p_H)
         self.assertEqual(reward, 0)
 
         d_H, p_H = 22, 5
-        reward = self.env._get_reward(d_H, p_H, False)
+        reward = self.env._get_reward(d_H, p_H)
         self.assertEqual(reward, 1)
 
         d_H, p_H = 5, 22
-        reward = self.env._get_reward(d_H, p_H, False)
+        reward = self.env._get_reward(d_H, p_H)
         self.assertEqual(reward, -1)
-
-        d_H, p_H = 17, 18
-        reward = self.env._get_reward(d_H, p_H, True)
-        self.assertEqual(reward, 1)

@@ -1,35 +1,27 @@
 import os
 import pickle
-import matplotlib.pyplot as plt
+import numpy as np
 from abc import ABC, abstractmethod
 
 
 class RLearningAgent(ABC):
+    def __init__(self, possible_actions=["stick", "hit"]):
+        self._possible_actions = possible_actions
+        self._n_actions = len(possible_actions)
+        self._action2id = dict(zip(possible_actions, range(self._n_actions)))
+        self._id2action = dict(zip(range(self._n_actions), possible_actions))
+        self._state_action_values = np.zeros(
+            (11, 22, self._n_actions), dtype=np.float32
+        )
+        self._state_action_visits = np.zeros(
+            (11, 22, self._n_actions), dtype=np.float32
+        )
 
-    def _save_local(self, output_dir, iteration=None, extension='pkl'):
-
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        fname = self._generate_fname(output_dir, iteration, extension)
-
-        if extension == 'pkl':
-            with open(fname, 'wb') as f:
-                pickle.dump(self, f)
-
-        if extension == 'png' or extension == 'jpg':
-            plt.savefig(fname)
-
-    def _generate_fname(self, output_dir, iteration, extension):
-        if iteration is None:
-            return os.path.join(output_dir, 'agent.{}'.format(extension))
-        return os.path.join(
-            output_dir, 'agent_iter_{}.{}'.format(iteration, extension))
+    def get_action_values(self):
+        return self._state_action_values.copy()
 
     @abstractmethod
-    def save(self, output_dir, iteration=None):
-        pass
-
-    @abstractmethod
-    def load(fname):
-        pass
+    def train(self, steps, environment):
+        for e in range(steps):
+            raise Exception("Running abstract training")
+        return
