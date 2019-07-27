@@ -1,4 +1,5 @@
 import os
+import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -17,19 +18,14 @@ def _generate_filepath(output_dir: str, agent: RLearningAgent):
 def train_and_plot(
     steps: int, agent: RLearningAgent, env: Easy21, output_dir: str, frames=50
 ):
-    """
-    Plots a value function as a surface plot, like in: https://goo.gl/aF2doj
+    """Util function to help train and visualize the progress
 
-    You can choose between just plotting the graph for the value function
-    which is the default behaviour (generate_gif=False) or to train the agent
-    a couple of times and save the frames in a gif as you train.
-
-    args:
-        agent.
-        title (string): plot title.
-        generate_gif (boolean): if want to save plots as a gif.
-        train_steps: if is not None and generate_gif = True, then will use this
-                    value as the number of steps to train the model at each frame.
+    Args:
+        steps (int): Total number of episodes to train the agent
+        agent (RLearningAgent): Agent to train
+        env (Easy21): Environment to train the agent in
+        output_dir (str): Directory to store the progress
+        frames (int, optional): Number of frames to show in the visualization. Defaults to 50.
     """
     filepath = _generate_filepath(output_dir, agent)
 
@@ -82,14 +78,18 @@ def train_and_plot(
 
     steps = steps // frames
 
-    def animate(frame):
-        i = steps * frame
-        agent.train(steps, env)
+    skip = 0
 
+    def animate(frame):
+        if frame != 0:
+            agent.train(steps, env)
+        i = steps * frame
+        logging.info("Frame %s" % frame)
+        logging.info("Iteration %s" % i)
         # clear the plot and create a new surface
         ax.clear()
         surf = plot_frame(ax)
-        plt.title("Iteration %s" % i)
+        plt.title("Iteration %s, frame %s" % (i, frame))
         fig.canvas.draw()
         return surf
 
@@ -132,7 +132,7 @@ def plot_error_vs_episode(
     plt.title(title)
     ax = fig.add_subplot(111)
 
-    for i in xrange(len(sqrt_error) - 1, -1, -1):
+    for i in range(len(sqrt_error) - 1, -1, -1):
         ax.plot(x_range, sqrt_error[i], label="lambda %.2f" % lambdas[i])
 
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
