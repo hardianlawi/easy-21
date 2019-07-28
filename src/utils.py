@@ -15,13 +15,19 @@ def _generate_filepath(output_dir: str, agent: RLearningAgent):
     return os.path.join(output_dir, agent.base_name)
 
 
-def train_and_plot(
-    steps: int, agent: RLearningAgent, env: Easy21, output_dir: str, frames=50
+def train_and_eval(
+    steps: int,
+    val_steps: int,
+    agent: RLearningAgent,
+    env: Easy21,
+    output_dir: str,
+    frames=50,
 ):
-    """Util function to help train and visualize the progress
+    """Util function to help train, evaluate and visualize the progress
 
     Args:
         steps (int): Total number of episodes to train the agent
+        val_steps (int): Total number of episodes to evaluate the agent
         agent (RLearningAgent): Agent to train
         env (Easy21): Environment to train the agent in
         output_dir (str): Directory to store the progress
@@ -29,13 +35,9 @@ def train_and_plot(
     """
     filepath = _generate_filepath(output_dir, agent)
 
-    # you can change this values to change the size of the graph
-    fig = plt.figure("Value function", figsize=(10, 5))
+    def _plot_3d_frame(ax, title):
 
-    # Explanation about this line: https://goo.gl/LH5E7i
-    ax = fig.add_subplot(111, projection="3d")
-
-    def plot_frame(ax):
+        ax.clear()
 
         V = agent.get_action_values()
 
@@ -64,6 +66,7 @@ def train_and_plot(
         ax.set_xlabel("Dealer Showing")
         ax.set_ylabel("Player Sum")
         ax.set_zlabel("Value")
+        ax.set_title(title)
 
         return ax.plot_surface(
             X,
@@ -78,7 +81,11 @@ def train_and_plot(
 
     steps = steps // frames
 
-    skip = 0
+    # you can change this values to change the size of the graph
+    fig = plt.figure(figsize=(16, 5))
+
+    # Explanation about this line: https://goo.gl/LH5E7i
+    ax_act_val = fig.add_subplot(111, projection="3d")
 
     def animate(frame):
         if frame != 0:
@@ -86,10 +93,9 @@ def train_and_plot(
         i = steps * frame
         logging.info("Frame %s" % frame)
         logging.info("Iteration %s" % i)
-        # clear the plot and create a new surface
-        ax.clear()
-        surf = plot_frame(ax)
-        plt.title("Iteration %s, frame %s" % (i, frame))
+        win_pctg = agent.eval(val_steps, env)
+        title = "Iteration %s, frame %s, Win: %s" % (i, frame, win_pctg)
+        surf = _plot_3d_frame(ax_act_val, title)
         fig.canvas.draw()
         return surf
 
