@@ -5,8 +5,8 @@ from .agent import RLearningAgent
 
 
 class MonteCarloAgent(RLearningAgent):
-    def __init__(self, n_0=100, gamma=1, method="first", *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, n_0=100, gamma=1, method="first"):
+        super().__init__()
         self.base_name = "monte_carlo_" + method
         self._gamma = gamma
         self._n_0 = n_0
@@ -17,10 +17,11 @@ class MonteCarloAgent(RLearningAgent):
     def train(self, steps: int, env: Easy21):
         for i in range(steps):
             cur_state = env.initial_step()
-            action = self.act(cur_state, explore=True)
             while not env.has_terminated():
+                action = self.act(cur_state, explore=True)
+                self._memorize(cur_state, action)
                 cur_state, reward = env.step(action)
-                self.observe(reward)
+                self._observe(reward)
             self._update()
             env.clear()
 
@@ -33,11 +34,9 @@ class MonteCarloAgent(RLearningAgent):
         else:
             action_values = self._state_action_values.take(state)
             action_id = np.argmax(action_values)
-        if explore:
-            self._memorize(state, action_id)
         return self._id2action[action_id]
 
-    def observe(self, reward):
+    def _observe(self, reward):
         gamma = self._gamma
         past_returns = self._past_returns
         n_states = len(past_returns)
@@ -45,7 +44,8 @@ class MonteCarloAgent(RLearningAgent):
             past_returns[i] = r + gamma ** (n_states - i) * reward
         past_returns.append(reward)
 
-    def _memorize(self, state, action_id):
+    def _memorize(self, state, action):
+        action_id = self._action2id[action]
         self._past_states.append(state)
         self._past_actions.append(action_id)
 

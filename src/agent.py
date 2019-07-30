@@ -54,4 +54,3 @@ class RLearningAgent(ABC):
                 if reward != -1:
                     win += 1
         return win / count
-
