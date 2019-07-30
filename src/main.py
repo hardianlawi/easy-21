@@ -2,7 +2,7 @@ import click
 import logging
 from .environment import Easy21
 from .monte_carlo import MonteCarloAgent
-from .td_learning import TDLearningAgent
+from .sarsa import SarsaAgent
 from .utils import train_and_eval
 
 logging.basicConfig(
@@ -24,7 +24,7 @@ def main(output_dir, agent_method, mc_method, no_episodes, val_no_episodes):
     if agent_method == "monte_carlo":
         agent = MonteCarloAgent(method=mc_method)
     else:
-        agent = TDLearningAgent()
+        agent = SarsaAgent()
 
     # Training and Eval
     train_and_eval(no_episodes, val_no_episodes, agent, env, output_dir)
