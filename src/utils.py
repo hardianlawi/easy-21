@@ -88,18 +88,17 @@ def train_and_eval(
     ax_act_val = fig.add_subplot(111, projection="3d")
 
     def animate(frame):
+        i = steps * frame
         if frame != 0:
             agent.train(steps, env)
-        i = steps * frame
-        logging.info("Frame %s" % frame)
-        logging.info("Iteration %s" % i)
+            logging.info("Frame %s, Iteration %s" % (frame, i))
         win_pctg = agent.eval(val_steps, env)
         title = "Iteration %s, frame %s, Win: %s" % (i, frame, win_pctg)
         surf = _plot_3d_frame(ax_act_val, title)
         fig.canvas.draw()
         return surf
 
-    ani = animation.FuncAnimation(fig, animate, frames, repeat=False)
+    ani = animation.FuncAnimation(fig, animate, frames + 1, repeat=False)
     ani.save(filepath + ".gif", writer="imagemagick", fps=3)
 
 

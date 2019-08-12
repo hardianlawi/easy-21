@@ -1,9 +1,9 @@
 import click
 import logging
-from .environment import Easy21
-from .monte_carlo import MonteCarloAgent
-from .sarsa import SarsaAgent
-from .utils import train_and_eval
+from src.environment import Easy21
+from src.monte_carlo import MonteCarloAgent
+from src.sarsa import SarsaAgent
+from src.utils import train_and_eval
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -13,11 +13,21 @@ logging.basicConfig(
 
 
 @click.command()
-@click.argument("output_dir", default="./outputs")
-@click.option("--agent_method", default="monte_carlo")
-@click.option("--mc_method", default="first")
-@click.option("--no_episodes", default=1000)
-@click.option("--val_no_episodes", default=500)
+@click.option(
+    "--output_dir",
+    default="./outputs",
+    show_default=True,
+    help="directory to save outputs",
+)
+@click.option(
+    "--agent_method",
+    default="monte_carlo",
+    show_default=True,
+    help="choice of agents (monte_carlo/sarsa)",
+)
+@click.option("--mc_method", default="every", show_default=True)
+@click.option("--no_episodes", default=1000, show_default=True)
+@click.option("--val_no_episodes", default=500, show_default=True)
 def main(output_dir, agent_method, mc_method, no_episodes, val_no_episodes):
 
     env = Easy21()

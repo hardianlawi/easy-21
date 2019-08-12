@@ -5,7 +5,7 @@ from .agent import RLearningAgent
 
 
 class MonteCarloAgent(RLearningAgent):
-    def __init__(self, n_0=100, gamma=1, method="first"):
+    def __init__(self, n_0=100, gamma=1.0, method="every"):
         super().__init__()
         self.base_name = "monte_carlo_" + method
         self._gamma = gamma
@@ -23,16 +23,18 @@ class MonteCarloAgent(RLearningAgent):
                 cur_state, reward = env.step(action)
                 self._observe(reward)
             self._update()
+            self._clear_cache()
             env.clear()
 
     def act(self, state, explore=True):
+        d_H, p_H = state
         n_0 = self._n_0
-        epsilon = n_0 / (n_0 + self._state_action_visits.take(state).sum())
+        epsilon = n_0 / (n_0 + self._state_action_visits[d_H, p_H].sum())
         # Choose action based on Epsilon-Greedy
         if explore and random.random() < epsilon:
             action_id = random.choice(range(self._n_actions))
         else:
-            action_values = self._state_action_values.take(state)
+            action_values = self._state_action_values[d_H, p_H]
             action_id = np.argmax(action_values)
         return self._id2action[action_id]
 
@@ -56,14 +58,12 @@ class MonteCarloAgent(RLearningAgent):
             # Increase N(s, a)
             self._state_action_visits[d_H, p_H, a] += 1
 
-            # Increase Q(s, a)
-            # Monte Carlo Incremental update
-            # q(s, a) = q(s, a) + 1 / n(s, a) * (g - q(s, a))
+            # # Increase Q(s, a)
+            # # Monte Carlo Incremental update
+            # # q(s, a) = q(s, a) + 1 / n(s, a) * (g - q(s, a))
             self._state_action_values[d_H, p_H, a] += (
                 g - self._state_action_values[d_H, p_H, a]
             ) / self._state_action_visits[d_H, p_H, a]
-
-        self._clear_cache()
 
     def _clear_cache(self):
         self._past_actions = []
