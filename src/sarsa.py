@@ -14,7 +14,7 @@ class SarsaAgent(RLearningAgent):
         self._e_trace = np.zeros((11, 22, self._n_actions), dtype=np.float32)
 
     def __str__(self):
-        return self.base_name
+        return self.base_name + "_gamma_%s_" % self._gamma + "_lmda+%s" % self._lmda
 
     def train(self, steps: int, env: Easy21):
         for i in range(steps):
@@ -71,13 +71,12 @@ class SarsaAgent(RLearningAgent):
                 ]
             )
 
-        update = (
-            delta
-            * self._e_trace
-            / self._state_action_visits[cur_state[0], cur_state[1], action_id]
-        )
+        update = delta * self._e_trace
 
-        self._state_action_values += update
+        # Using the visits as alpha for the action values to converge to real values
+        alpha = 1 / self._state_action_visits[cur_state[0], cur_state[1], action_id]
+
+        self._state_action_values += alpha * update
         self._e_trace *= self._gamma * self._lmda
 
     def _refresh_cache(self):
